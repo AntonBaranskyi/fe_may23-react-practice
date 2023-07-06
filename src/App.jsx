@@ -1,14 +1,15 @@
+/*eslint-disable*/
+import React, { useState } from "react";
+import "./App.scss";
 
-import React, { useState } from 'react';
-import './App.scss';
-
-import classNames from 'classnames';
-import usersFromServer from './api/users';
-import categoriesFromServer from './api/categories';
-import productsFromServer from './api/products';
+import classNames from "classnames";
+import usersFromServer from "./api/users";
+import categoriesFromServer from "./api/categories";
+import productsFromServer from "./api/products";
 
 // eslint-disable-next-line max-len
-const getCategory = productID => categoriesFromServer.find(category => category.id === productID);
+const getCategory = (productID) =>
+  categoriesFromServer.find((category) => category.id === productID);
 
 const productsCategory = productsFromServer.map((product) => {
   const category = getCategory(product.categoryId);
@@ -22,7 +23,7 @@ const productsCategory = productsFromServer.map((product) => {
 });
 
 const products = productsCategory.map((product) => {
-  const user = usersFromServer.find(us => us.id === product.ownerId);
+  const user = usersFromServer.find((us) => us.id === product.ownerId);
 
   return { ...product, user };
 });
@@ -33,14 +34,24 @@ const filterProducts = (allProducts, { searchField, filterNameField }) => {
   if (searchField) {
     const lowerSearch = searchField.trim().toLowerCase();
 
-    return copyProducts.filter(
-      product => product.name.toLowerCase().includes(lowerSearch),
-    );
+    if (filterNameField) {
+      const withUsers = copyProducts.filter(
+        (item) => item.user.name === filterNameField
+      );
+
+      return withUsers.filter((product) =>
+        product.name.toLowerCase().includes(lowerSearch)
+      );
+    } else {
+      return copyProducts.filter((product) =>
+        product.name.toLowerCase().includes(lowerSearch)
+      );
+    }
   }
 
   if (filterNameField) {
     return copyProducts.filter(
-      product => product.user.name === filterNameField,
+      (product) => product.user.name === filterNameField
     );
   }
 
@@ -48,8 +59,9 @@ const filterProducts = (allProducts, { searchField, filterNameField }) => {
 };
 
 export const App = () => {
-  const [searchField, setSearchField] = useState('');
-  const [filterNameField, setFilterNameField] = useState('');
+  const [searchField, setSearchField] = useState("");
+  const [filterNameField, setFilterNameField] = useState("");
+  const [filterCategoryField, setFilterCategoryField] = useState("");
 
   const visibleProducts = filterProducts(products, {
     searchField,
@@ -57,8 +69,8 @@ export const App = () => {
   });
 
   const resetFilters = () => {
-    setFilterNameField('');
-    setSearchField('');
+    setFilterNameField("");
+    setSearchField("");
   };
 
   return (
@@ -72,22 +84,22 @@ export const App = () => {
 
             <p className="panel-tabs has-text-weight-bold">
               <a
-                onClick={() => setFilterNameField('')}
+                onClick={() => setFilterNameField("")}
                 data-cy="FilterAllUsers"
                 href="#/"
-                className={classNames({ 'is-active': !filterNameField })}
+                className={classNames({ "is-active": !filterNameField })}
               >
                 All
               </a>
 
-              {usersFromServer.map(user => (
+              {usersFromServer.map((user) => (
                 <a
                   onClick={() => setFilterNameField(user.name)}
                   key={user.id}
                   data-cy="FilterUser"
                   href="#/"
                   className={classNames({
-                    'is-active': filterNameField === user.name,
+                    "is-active": filterNameField === user.name,
                   })}
                 >
                   {user.name}
@@ -103,7 +115,7 @@ export const App = () => {
                   className="input"
                   placeholder="Search"
                   value={searchField}
-                  onChange={event => setSearchField(event.target.value)}
+                  onChange={(event) => setSearchField(event.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -112,12 +124,14 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                    onClick={() => setSearchField('')}
-                  />
+                  {searchField && (
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setSearchField("")}
+                    />
+                  )}
                 </span>
               </p>
             </div>
@@ -131,12 +145,13 @@ export const App = () => {
                 All
               </a>
 
-              {categoriesFromServer.map(category => (
+              {categoriesFromServer.map((category) => (
                 <a
                   key={category.id}
                   data-cy="Category"
                   className="button mr-2 my-1"
                   href="#/"
+                  onClick={() => setFilterCategoryField(category.title)}
                 >
                   {category.title}
                 </a>
@@ -215,7 +230,7 @@ export const App = () => {
               </thead>
 
               <tbody>
-                {visibleProducts.map(product => (
+                {visibleProducts.map((product) => (
                   <tr key={product.id} data-cy="Product">
                     <td className="has-text-weight-bold" data-cy="ProductId">
                       {product.id}
@@ -227,8 +242,8 @@ export const App = () => {
                     <td
                       data-cy="ProductUser"
                       className={classNames({
-                        'has-text-link': product.user.sex === 'm',
-                        'has-text-danger': product.user.sex === 'f',
+                        "has-text-link": product.user.sex === "m",
+                        "has-text-danger": product.user.sex === "f",
                       })}
                     >
                       {product.user.name}
