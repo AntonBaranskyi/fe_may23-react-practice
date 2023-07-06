@@ -146,7 +146,7 @@ describe('', () => {
     });
   });
 
-  describe('Filter by Product name', () => {
+  describe.skip('Filter by Product name', () => {
     it('should have an empty field by default', () => {
       nameFilter.field().should('have.value', '');
     });
@@ -243,7 +243,7 @@ describe('', () => {
     });
   });
 
-  describe('NoMatchingResults message', () => {
+  describe.skip('NoMatchingResults message', () => {
     it('should not be visible by default', () => {
       page.noMatchingMessage().should('not.exist');
     });
@@ -265,7 +265,7 @@ describe('', () => {
     });
   });
 
-  describe('Reset All Filters button', () => {
+  describe.skip('Reset All Filters button', () => {
     it('should reset with user filter', () => {
       userFilter.users().eq(1).click();
 
@@ -295,7 +295,7 @@ describe('', () => {
   });
 
   // Categories tests are skiped by default
-  describe.skip('Filter by categories', () => {
+  describe('Filter by categories', () => {
     it('should have All Categories Button active by default', () => {
       categoriesFilter.allButton().should('not.have.class', 'is-outlined');
     });

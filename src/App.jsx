@@ -28,7 +28,10 @@ const products = productsCategory.map((product) => {
   return { ...product, user };
 });
 
-const filterProducts = (allProducts, { searchField, filterNameField }) => {
+const filterProducts = (
+  allProducts,
+  { searchField, filterNameField, filterCategoryField }
+) => {
   const copyProducts = [...allProducts];
 
   if (searchField) {
@@ -55,24 +58,45 @@ const filterProducts = (allProducts, { searchField, filterNameField }) => {
     );
   }
 
+  if (filterCategoryField.length > 0) {
+    return copyProducts.filter((item) => {
+      return filterCategoryField.some(
+        (filter) => filter === item.category.title
+      );
+    });
+  }
+
   return copyProducts;
 };
 
 export const App = () => {
   const [searchField, setSearchField] = useState("");
   const [filterNameField, setFilterNameField] = useState("");
-  const [filterCategoryField, setFilterCategoryField] = useState("");
+  const [filterCategoryField, setFilterCategoryField] = useState([]);
 
   const visibleProducts = filterProducts(products, {
     searchField,
     filterNameField,
+    filterCategoryField,
   });
 
   const resetFilters = () => {
     setFilterNameField("");
     setSearchField("");
+    setFilterCategoryField((prev) => (prev = []));
   };
 
+  const changeFilterCategory = (category) => {
+    if (filterCategoryField.includes(category.title)) {
+      setFilterCategoryField((prev) =>
+        prev.filter((item) => item !== category.title)
+      );
+    } else {
+      setFilterCategoryField((prev) => [...prev, category.title]);
+    }
+  };
+
+  console.log(products);
   return (
     <div className="section">
       <div className="container">
@@ -140,7 +164,11 @@ export const App = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                onClick={() => setFilterCategoryField((prev) => (prev = []))}
+                className={classNames({
+                  "button is-success mr-6": true,
+                  "is-outlined": filterCategoryField.length > 0,
+                })}
               >
                 All
               </a>
@@ -149,9 +177,12 @@ export const App = () => {
                 <a
                   key={category.id}
                   data-cy="Category"
-                  className="button mr-2 my-1"
+                  className={classNames({
+                    "button mr-2 my-1": true,
+                    "is-info": filterCategoryField.includes(category.title),
+                  })}
                   href="#/"
-                  onClick={() => setFilterCategoryField(category.title)}
+                  onClick={() => changeFilterCategory(category)}
                 >
                   {category.title}
                 </a>
